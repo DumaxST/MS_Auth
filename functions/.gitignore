@@ -1,2 +1,8 @@
 node_modules/
-*.local
+
+.env
+/functions/.env
+
+stripeAccount.json
+serviceAccount.json
+env.json
