@@ -13,5 +13,4 @@ router.post("/users", async (req, res) => {
   res.status(201).send(user);
 });
 
-
 module.exports = router;
