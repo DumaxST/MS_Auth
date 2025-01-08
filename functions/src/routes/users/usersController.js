@@ -30,6 +30,7 @@ const getUser = async (req, res) => {
     return response(res, req, 200, user);
   }
 
+  //Ejemplo de paginado
   if (itemsPerPage) {
     const itemsPerPageNumber = parseInt(itemsPerPage, 10);
     const filters = [["status", "==", "active"]];
