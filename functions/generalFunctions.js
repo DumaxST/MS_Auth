@@ -287,7 +287,7 @@ module.exports = {
         `Error getting paginated filtered documents for ${collectionPath}:`,
         error
       );
-      throw new Error("Error getting paginated filtered documents");
+      throw new Error("Error getting paginated filtered documents", error);
     }
   },
 
