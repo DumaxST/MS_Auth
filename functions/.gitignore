@@ -3,6 +3,5 @@ node_modules/
 .env
 /functions/.env
 
-stripeAccount.json
 serviceAccount.json
 env.json
