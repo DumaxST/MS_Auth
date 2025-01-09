@@ -1,11 +1,16 @@
+// Express
 const { Router } = require("express");
-const { createDocument } = require("../../../generalFunctions");
-const usersController = require("./usersController");
-const userSchema = require("./userSchema");
 const router = Router();
 
+// Middlewares
+const usersController = require("./usersController");
+const userSchema = require("./userSchema");
+
+// -------------------------------- RUTAS --------------------------------
+
 router.get("/", (req, res) => {
-  res.send("Hello, users!");
+  // res.send("Hello, users!");
+  res.send(req.t("create_user"));
 });
 
 //Endpoint postUser
