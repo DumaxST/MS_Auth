@@ -1,4 +1,11 @@
 {
-  "create_user": "¡Usuario creado exitosamente!",
-  "success_login": "¡Inicio de sesión exitoso!"
+  "MustBe20CharactersMax": "Debe ser máximo 20 caracteres",
+  "MustBeABoolean": "Debe ser un booleano",
+  "MustBeAnArray": "Debe ser un arreglo",
+  "MustBeAnObject": "Debe ser un objeto",
+  "MustBeAString": "Debe ser una cadena de caracteres",
+  "MustBeAValidEmail": "Debe ser un correo electrónico válido",
+  "MustBeNumeric": "Debe ser numérico",
+  "MustNotBeEmpty": "No debe estar vacío",
+  "userNotFound": "Usuario no encontrado"
 }

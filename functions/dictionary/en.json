@@ -1,4 +1,11 @@
 {
-  "create_user": "User created successfully!",
-  "success_login": "Successful login!"
+  "MustBe20CharactersMax": "Must be 20 characters max",
+  "MustBeABoolean": "Must be a boolean",
+  "MustBeAnArray": "Must be an array",
+  "MustBeAnObject": "Must be an object",
+  "MustBeAString": "Must be a string",
+  "MustBeAValidEmail": "Must be a valid email",
+  "MustBeNumeric": "Must be numeric",
+  "MustNotBeEmpty": "Must not be empty",
+  "userNotFound": "User not found"
 }
