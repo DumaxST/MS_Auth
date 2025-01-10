@@ -5,16 +5,15 @@ const validateResult = (req, res, next) => {
     validationResult(req).throw();
     return next();
   } catch (error) {
-
     res.status(422).send({
       meta: {
         error: true,
         status: res.statusCode,
         url: req.protocol + "://" + req.get("host") + req.url,
-        message: error.array().map((e) => {
+        message: error.array().map((e) => {   
           return {
             ...e,
-            msg: req.t(e.msg.message),
+            msg: req.t(e.msg.message || e.msg),
             status: e.msg.statusCode,
           };
         }),

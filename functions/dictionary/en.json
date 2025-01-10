@@ -1,4 +1,9 @@
 {
+  "EmailAlreadyRegistered": "This email is already associated with an existing account",
+  "FileNameIsRequired": "File name is required",
+  "FileNameMustBeAString": "File name must be a string",
+  "InvalidProfilePictureKey": "Invalid key in 'profilePicture'",
+  "InvalidUrl": "Invalid URL",
   "MustBe20CharactersMax": "Must be 20 characters max",
   "MustBeABoolean": "Must be a boolean",
   "MustBeAnArray": "Must be an array",
@@ -7,5 +12,8 @@
   "MustBeAValidEmail": "Must be a valid email",
   "MustBeNumeric": "Must be numeric",
   "MustNotBeEmpty": "Must not be empty",
-  "userNotFound": "User not found"
+  "PhoneAlreadyRegistered": "This phone number is already associated with an existing account.",
+  "UrlIsRequired": "URL is required",
+  "UrlMustBeAString": "URL must be a string",
+  "UserNotFound": "User not found"
 }

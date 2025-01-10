@@ -69,6 +69,19 @@ module.exports = {
       throw new Error("Error getting document collections");
     }
   },
+  getUserByEmail: async (email) => {
+    try {
+      const userRecord = await admin.auth().getUserByEmail(email);
+      return userRecord;
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+        // El usuario no existe
+        return null;
+      }
+      // Otro error ocurrió
+      throw error;
+    }
+  },
   createDocument: async (ref, obj, id) => {
     try {
       if (obj.test) {
@@ -123,6 +136,7 @@ module.exports = {
     }
   },
   sendFirebaseEmail: async (emailData) => {
+    console.log("holis")
     try {
       await module.exports.createDocument(`mail`, {
         from: "notreply@mi-oasis.com",
