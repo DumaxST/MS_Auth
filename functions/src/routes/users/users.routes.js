@@ -8,12 +8,6 @@ const userSchema = require("./userSchema");
 
 // -------------------------------- RUTAS --------------------------------
 
-router.get("/", (req, res) => {
-  // res.send("Hello, users!");
-  res.send(req.t("create_user"));
-});
-
-//Endpoint postUser
 router.post("/create/user", userSchema.postUser, usersController.postUser);
 
 router.put("/update/user", usersController.putUser); // Falta Schemas

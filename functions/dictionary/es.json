@@ -1,4 +1,20 @@
 {
-  "create_user": "¡Usuario creado exitosamente!",
-  "success_login": "¡Inicio de sesión exitoso!"
+  "EmailAlreadyRegistered": "Este correo electrónico ya está asociado con una cuenta existente",
+  "FileNameIsRequired": "El nombre del archivo es obligatorio",
+  "FileNameMustBeAString": "El nombre del archivo debe ser una cadena de caracteres",
+  "InvalidProfilePictureKey": "Clave inválida en 'profilePicture'",
+  "InvalidUrl": "URL inválida",
+  "MustBe20CharactersMax": "Debe ser máximo 20 caracteres",
+  "MustBeABoolean": "Debe ser un booleano",
+  "MustBeAnArray": "Debe ser un arreglo",
+  "MustBeAnObject": "Debe ser un objeto",
+  "MustBeAString": "Debe ser una cadena de caracteres",
+  "MustBeAValidEmail": "Debe ser un correo electrónico válido",
+  "MustBeNumeric": "Debe ser numérico",
+  "MustNotBeEmpty": "No debe estar vacío",
+  "PhoneAlreadyRegistered": "Este número de teléfono ya está asociado con una cuenta existente",
+  "UrlIsRequired": "La URL es obligatoria",
+  "UrlMustBeAString": "La URL debe ser una cadena de caracteres",
+  "UserNotFound": "Usuario no encontrado",
+  "invalidToken": "Token inválido"
 }
