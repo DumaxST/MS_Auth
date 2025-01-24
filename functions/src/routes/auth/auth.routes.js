@@ -17,4 +17,10 @@ router.get("/", (req, res) => {
 //comentar schema en caso de pruebas sin front
 router.post("/login", authSchema.postLogin, authController.authLogin)
 
+//security code
+router.post("/password/code", authSchema.passwordCode, authController.passwordCode);
+
+//reset password
+router.post("/reset/password", authSchema.validateCode, authController.validateVerificationCode); 
+
 module.exports = router;

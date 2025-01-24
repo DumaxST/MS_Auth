@@ -1,4 +1,5 @@
 {
+  "invalidOrExpiredCode": "Código inválido o expirado",
   "codeDoesNotExist": "El código de verificación no existe",
   "codeSent": "Código enviado con éxito!",
   "emailSent": "Correo electrónico enviado con éxito!",
