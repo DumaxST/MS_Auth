@@ -1,4 +1,7 @@
 {
+  "codeDoesNotExist": "Verification code doesn't exist",
+  "codeSent": "code successfully sent!",
+  "emailSent": "Email successfully sent!",
   "EmailAlreadyRegistered": "This email is already associated with an existing account",
   "FileNameIsRequired": "File name is required",
   "FileNameMustBeAString": "File name must be a string",
