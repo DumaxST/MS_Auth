@@ -10,7 +10,6 @@ const modo = process.env.MODO;
 const key = process.env.KEY;
 
 const validateToken = (req, res, next) => {
-  console.log(req.headers, "req.headers");
   const token =
     req.headers["authorization"] && req.headers["authorization"].split(" ")[1];
 
