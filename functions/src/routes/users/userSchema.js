@@ -28,7 +28,7 @@ const userSchema = {
       .notEmpty()
       .withMessage(() => new ClientError("MustNotBeEmpty", 400))
       .isString()
-      .withMessage("Phone must be a string")
+      .withMessage(() => new ClientError("MustBeAString", 422))
       .custom(async (value, { req }) => {
         const existingUser = await getDocuments("users", [
           "phone",
