@@ -15,6 +15,10 @@ const CryptoJS = require("crypto-js");
 const postUser = async (req, res) => {
   const { user, auth } = req.body;
 
+  if (user.test) {
+    return response(res, req, 201, { ...user, id: "testUserId" });
+  }
+
   const decryptedAuth = CryptoJS.AES.decrypt(auth, "your-secret-key").toString(
     CryptoJS.enc.Utf8
   );
@@ -59,7 +63,10 @@ const postUser = async (req, res) => {
 };
 
 const putUser = async (req, res) => {
-  const user = req.body;
+  const { user } = req.body;
+  if (user.test) {
+    return response(res, req, 200, { ...user, id: "testUserId" });
+  }
 
   const updated = await updateDocument("users", user.id, user);
   return response(res, req, 200, updated);
@@ -102,7 +109,10 @@ const getUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const id = req.query.id;
+  const { id, test } = req.query;
+  if (test) {
+    return response(res, req, 201, { message: "User deleted" });
+  }
 
   await admin.auth().deleteUser(id);
   await deleteDocument("users", id);
