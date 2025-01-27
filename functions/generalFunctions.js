@@ -344,7 +344,6 @@ module.exports = {
   // }
 
   generateToken: async (data) => {
-    console.log(secretKeyJWT, secretKeyRefresh)
     const expiresIn = 60 * 20; // 20 minutos
     const token = jwt.sign(data, secretKeyJWT, { expiresIn });
     const expirationDate = new Date(Date.now() + expiresIn * 1000);
