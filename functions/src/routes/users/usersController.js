@@ -25,6 +25,9 @@ const postUser = async (req, res) => {
     displayName: `${user.firstName} ${user.lastName}`,
   });
 
+  // Asignar custom claims (por ejemplo, rol)
+  await admin.auth().setCustomUserClaims(newUser.uid, { role: user.role });
+
   await createDocument("users", user, newUser.uid);
 
   const passwordResetLink = await admin
