@@ -1,4 +1,8 @@
 {
+  "invalidOrExpiredCode": "Código inválido o expirado",
+  "codeDoesNotExist": "El código de verificación no existe",
+  "codeSent": "Código enviado con éxito!",
+  "emailSent": "Correo electrónico enviado con éxito!",
   "EmailAlreadyRegistered": "Este correo electrónico ya está en uso.",
   "FileNameIsRequired": "El nombre del archivo es obligatorio",
   "FileNameMustBeAString": "El nombre del archivo debe ser una cadena de caracteres",
@@ -22,5 +26,6 @@
   "UrlIsRequired": "La URL es obligatoria",
   "UrlMustBeAString": "La URL debe ser una cadena de caracteres",
   "UserLoggedOut": "Usuario desconectado",
-  "UserNotFound": "Usuario no encontrado"
+  "UserNotFound": "Usuario no encontrado",
+  "UserDeleted": "Usuario eliminado"
 }

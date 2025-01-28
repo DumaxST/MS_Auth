@@ -214,24 +214,24 @@ const userSchema = {
           throw () => new ClientError("MustBeAnObject", 422);
         }
 
-        const { url, fileName, ...rest } = value;
+          const { url, fileName, ...rest } = value;
 
-        if (Object.keys(rest).length > 0) {
-          throw () => new ClientError("InvalidProfilePictureKey", 400);
-        }
-
-        if (url === "" && fileName === "") {
-          return true;
-        }
-
-        if (url && url !== "" && fileName && fileName !== "") {
-          if (typeof url !== "string") {
-            throw () => new ClientError("UrlMustBeAString", 422);
+          if (Object.keys(rest).length > 0) {
+            throw () => new ClientError("InvalidProfilePictureKey", 400);
           }
 
-          if (!url.startsWith("https://firebasestorage.googleapis.com")) {
-            throw () => new ClientError("InvalidUrl", 400);
+          if (url === "" && fileName === "") {
+            return true;
           }
+
+          if (url && url !== "" && fileName && fileName !== "") {
+            if (typeof url !== "string") {
+              throw () => new ClientError("UrlMustBeAString", 422);
+            }
+
+            if (!url.startsWith("https://firebasestorage.googleapis.com")) {
+              throw () => new ClientError("InvalidUrl", 400);
+            }
 
           if (typeof fileName !== "string") {
             throw () => new ClientError("FileNameMustBeAString", 422);
