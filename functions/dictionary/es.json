@@ -8,8 +8,10 @@
   "FileNameMustBeAString": "El nombre del archivo debe ser una cadena de caracteres",
   "InvalidOrExpiredToken": "Token inválido o expirado",
   "InvalidProfilePictureKey": "Clave inválida en 'profilePicture'",
+  "invalidToken": "Token inválido",
   "InvalidTokenOrPwdEmail": "Token inválido o contraseña y correo electrónico incorrectos",
   "InvalidUrl": "URL inválida",
+  "InvalidUserID": "ID de usuario inválido",
   "MustBe20CharactersMax": "Debe ser máximo 20 caracteres",
   "MustBeABoolean": "Debe ser un booleano",
   "MustBeAnArray": "Debe ser un arreglo",
@@ -18,12 +20,11 @@
   "MustBeAValidEmail": "Debe ser un correo electrónico válido",
   "MustBeNumeric": "Debe ser numérico",
   "MustNotBeEmpty": "No debe estar vacío",
-  "PhoneAlreadyRegistered": "Este número de teléfono ya está asociado con una cuenta existente",
+  "PhoneAlreadyRegistered": "Este número de teléfono ya está en uso",
   "RefreshTokenNotFound": "Token de refresco no encontrado",
   "TokenNotFound": "Token no encontrado",
   "UrlIsRequired": "La URL es obligatoria",
   "UrlMustBeAString": "La URL debe ser una cadena de caracteres",
-  "UserNotFound": "Usuario no encontrado",
   "UserLoggedOut": "Usuario desconectado",
-  "invalidToken": "Token inválido"
+  "UserNotFound": "Usuario no encontrado"
 }
