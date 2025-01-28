@@ -24,6 +24,7 @@ const postUser = async (req, res) => {
     email: user.email,
     password: decryptedAuth,
     displayName: `${user.firstName} ${user.lastName}`,
+    phoneNumber: user.phone
   });
 
   // Asignar custom claims (por ejemplo, rol)
@@ -86,7 +87,7 @@ const putUser = async (req, res) => {
   }
 
   // Actualizar el role del custom claims
-  if (typeof user.role !== 'undefined' && tempUser.role !== user.role) {
+  if (typeof user.role !== "undefined" && tempUser.role !== user.role) {
     await admin.auth().setCustomUserClaims(user.id, { role: user.role });
   }
 
@@ -105,7 +106,7 @@ const putUser = async (req, res) => {
     user?.profilePicture?.fileName === "" &&
     user?.profilePicture?.fileName !== tempUser?.profilePicture?.fileName
   ) {
-    const filePath = `${user?.id}/profilePicture`;
+    const filePath = `users/${user?.id}/profilePicture`;
     const [files] = await bucket.getFiles({ prefix: filePath });
     await Promise.all(files.map((file) => file.delete()));
 
@@ -156,9 +157,36 @@ const getUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.query;
 
+  const user = await getDocument("users", id);
+
+  // Eliminar usuario de Firebase Auth
   await admin.auth().deleteUser(id);
+
+  // Eliminar usuario de Firestore
   await deleteDocument("users", id);
-  return response(res, req, 200, { message: "User deleted" });
+
+  // Eliminar foto de perfil de Firebase Storage
+  const folderPath = `users/${id}/profilePicture`;
+  const [files] = await bucket.getFiles({ prefix: folderPath });
+  await Promise.all(files.map((file) => file.delete()));
+
+  // Enviar email de cuenta eliminada
+  const emailDataTemp = {
+    to: [user.email],
+    message: {
+      subject: "Cuenta eliminada",
+      html: `
+        <h1>Hola ${user.firstName} ${user.lastName}</h1>
+        <p>Lamentamos informarle que su cuenta ha sido eliminada.</p>
+        <p>Le agradecemos por usar nuestras aplicaciones y esperamos verlo nuevamente.</p>
+      `,
+    },
+    attachments: [],
+  };
+
+  await sendFirebaseEmail(emailDataTemp);
+
+  return response(res, req, 200, { message: req.t("UserDeleted") });
 };
 
 module.exports = {
