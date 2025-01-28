@@ -17,4 +17,8 @@ router.get("/get/user", validateToken, usersController.getUser); // Falta Schema
 
 router.delete("/delete/user", validateToken, usersController.deleteUser); // Falta Schemas
 
+
+//public user
+router.post("/create/public/user", userSchema.postPublicUser, usersController.postPublicUser );
+
 module.exports = router;

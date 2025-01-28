@@ -111,6 +111,43 @@ const userSchema = {
       validateResult(req, res, next);
     },
   ],
+  postPublicUser: [
+    check("auth")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422)),
+    check("user.firstName")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isLength({ max: 20 })
+      .withMessage(() => new ClientError("MustBe20CharactersMax", 422)),
+    check("user.lastName")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isLength({ max: 20 })
+      .withMessage(() => new ClientError("MustBe20CharactersMax", 422)),
+    check("user.email")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isEmail()
+      .withMessage(() => new ClientError("MustBeAValidEmail", 422))
+      .custom(async (value, { req }) => {
+        if (value) {
+          const existingUser = await getUserByEmail(value);
+          if (existingUser) {
+            throw () => new ClientError("EmailAlreadyRegistered", 409);
+          }
+        }
+      }),
+    (req, res, next) => {
+      validateResult(req, res, next);
+    },
+  ],
 };
 
 module.exports = userSchema;

@@ -682,3 +682,228 @@ describe("DELETE /delete/user", () => {
     expect(res.body.data.message).toBe("User deleted");
   });
 });
+
+describe("POST /create/public/user", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("Should respond with a 400 error if a required firstName is missing", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          lastName: "Doe",
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 400 error if a required lastName is missing", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 400 error if a required email is missing", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 400 error if auth is missing", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 422 error if email has an invalid format", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "invalid_email_format",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en"
+        ? "Must be a valid email"
+        : "Debe ser un correo electrónico válido"
+    );
+  });
+
+  it("Should respond with a 422 error if auth has an invalid format", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: 1234567890,
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if firstName has an invalid format", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: 1234567890,
+          lastName: "Doe",
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if lastName has an invalid format", async () => {
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          lastName: 1234567890,
+          email: "john.doe@example.com",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 409 error if the email is already registered", async () => {
+    getDocuments.mockResolvedValue([]);
+    getUserByEmail.mockResolvedValue({ email: "existing.email@example.com" });
+
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "existing.email@example.com",
+          test: true,
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(409);
+    expect(res.body.meta.message["409"][0].msg).toBe(
+      lang === "en"
+        ? "This email is already associated with an existing account"
+        : "Este correo electrónico ya está asociado con una cuenta existente"
+    );
+
+    jest.restoreAllMocks();
+  });
+
+  it("Should respond with a successfully created user if all data is valid", async () => {
+    getUserByEmail.mockResolvedValue(null);
+    getDocuments.mockResolvedValue([]);
+
+    const res = await request(usersApp)
+      .post("/create/public/user")
+      .send({
+        auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@example.com",
+        },
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data).toBeInstanceOf(Object);
+    expect(res.body.data).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("firstName");
+    expect(res.body.data).toHaveProperty("lastName");
+    expect(res.body.data).toHaveProperty("email");
+  });
+});
