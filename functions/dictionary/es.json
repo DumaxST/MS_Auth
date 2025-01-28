@@ -25,8 +25,8 @@
   "TokenNotFound": "Token no encontrado",
   "UrlIsRequired": "La URL es obligatoria",
   "UrlMustBeAString": "La URL debe ser una cadena de caracteres",
-  "UserNotFound": "Usuario no encontrado",
   "UserLoggedOut": "Usuario desconectado",
+  "UserNotFound": "Usuario no encontrado",
   "invalidToken": "Token inválido",
   "UserDeleted": "Usuario eliminado"
 }

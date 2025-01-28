@@ -42,6 +42,14 @@ jest.mock("firebase-admin", () => {
         }),
       }),
     }),
+    storage: jest.fn().mockReturnValue({
+      bucket: jest.fn().mockReturnValue({
+        file: jest.fn().mockReturnValue({
+          save: jest.fn().mockResolvedValue(true),
+          delete: jest.fn().mockResolvedValue(true),
+        }),
+      }),
+    }),
   };
 });
 
