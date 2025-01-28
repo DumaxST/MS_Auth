@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 //comentar schema en caso de pruebas sin front
 router.post(
   "/login",
-  authSchema.postLogin,
+  //authSchema.postLogin,
   validateAuthTokenFirebase,
   authController.authLogin
 );
