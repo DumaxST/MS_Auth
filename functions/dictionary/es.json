@@ -27,5 +27,6 @@
   "UrlMustBeAString": "La URL debe ser una cadena de caracteres",
   "UserNotFound": "Usuario no encontrado",
   "UserLoggedOut": "Usuario desconectado",
-  "invalidToken": "Token inválido"
+  "invalidToken": "Token inválido",
+  "UserDeleted": "Usuario eliminado"
 }

@@ -27,5 +27,6 @@
   "UrlMustBeAString": "URL must be a string",
   "UserLoggedOut": "User logged out",
   "UserNotFound": "User not found",
-  "invalidToken": "Invalid Token"
+  "invalidToken": "Invalid Token",
+  "UserDeleted": "User deleted"
 }
