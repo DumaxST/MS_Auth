@@ -65,43 +65,47 @@ const userSchema = {
     check("user.profilePicture")
       .optional()
       .custom((value, { req }) => {
-        const language = req?.query?.lang;
-        if (typeof value !== "object") {
-          throw () => new ClientError("MustBeAnObject", 422);
-        }
+        if (value) {
+          const language = req?.query?.lang;
+          if (typeof value !== "object") {
+            throw () => new ClientError("MustBeAnObject", 422);
+          }
 
-        const { url, fileName, ...rest } = value;
+          const { url, fileName, ...rest } = value;
 
-        if (Object.keys(rest).length > 0) {
-          throw () => new ClientError("InvalidProfilePictureKey", 400);
-        }
+          if (Object.keys(rest).length > 0) {
+            throw () => new ClientError("InvalidProfilePictureKey", 400);
+          }
 
-        if (url === "" && fileName === "") {
+          if (url === "" && fileName === "") {
+            return true;
+          }
+
+          if (url && url !== "" && fileName && fileName !== "") {
+            if (typeof url !== "string") {
+              throw () => new ClientError("UrlMustBeAString", 422);
+            }
+
+            if (!url.startsWith("https://firebasestorage.googleapis.com")) {
+              throw () => new ClientError("InvalidUrl", 400);
+            }
+
+            if (typeof fileName !== "string") {
+              throw () => new ClientError("FileNameMustBeAString", 422);
+            }
+          } else if (url || fileName) {
+            if (!url) {
+              throw () => new ClientError("UrlIsRequired", 400);
+            }
+            if (!fileName) {
+              throw () => new ClientError("FileNameIsRequired", 400);
+            }
+          }
+
+          return true;
+        } else {
           return true;
         }
-
-        if (url && url !== "" && fileName && fileName !== "") {
-          if (typeof url !== "string") {
-            throw () => new ClientError("UrlMustBeAString", 422);
-          }
-
-          if (!url.startsWith("https://firebasestorage.googleapis.com")) {
-            throw () => new ClientError("InvalidUrl", 400);
-          }
-
-          if (typeof fileName !== "string") {
-            throw () => new ClientError("FileNameMustBeAString", 422);
-          }
-        } else if (url || fileName) {
-          if (!url) {
-            throw () => new ClientError("UrlIsRequired", 400);
-          }
-          if (!fileName) {
-            throw () => new ClientError("FileNameIsRequired", 400);
-          }
-        }
-
-        return true;
       }),
     (req, res, next) => {
       validateResult(req, res, next);

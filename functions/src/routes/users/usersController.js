@@ -59,7 +59,7 @@ const postUser = async (req, res) => {
 };
 
 const putUser = async (req, res) => {
-  const user = req.body;
+  const { user } = req.body;
 
   const updated = await updateDocument("users", user.id, user);
   return response(res, req, 200, updated);
@@ -102,7 +102,7 @@ const getUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const id = req.query.id;
+  const { id } = req.query;
 
   await admin.auth().deleteUser(id);
   await deleteDocument("users", id);
