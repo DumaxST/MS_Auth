@@ -1,7 +1,7 @@
 // Dependencias Firebase
-require("dotenv").config();
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+require("dotenv").config();
 
 // Dependencias de 18next
 const middleware = require("i18next-http-middleware");
@@ -23,7 +23,14 @@ const cookieParser = require("cookie-parser");
 // Inicializar Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  storageBucket: "gs://service-delivery-development.firebasestorage.app",
 });
+
+//Bucket de almacenemaiento
+const bucket = admin
+  .storage()
+  .bucket("gs://service-delivery-development.firebasestorage.app");
+exports.bucket = bucket;
 
 // Inicializar i18next
 i18next
