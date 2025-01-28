@@ -11,8 +11,8 @@ const userSchema = {
   getUser: [
     check("id")
       .optional()
-      .isString()
-      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
       .custom(async (value) => {
         const existingUser = await getDocument(`/users`, value);
 
@@ -28,8 +28,8 @@ const userSchema = {
       .withMessage(() => new ClientError("MustBeNumeric", 422)),
     check("lastDocId")
       .optional()
-      .isString()
-      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
       .custom(async (value) => {
         const existingUser = await getDocument(`/users`, value);
 
@@ -39,6 +39,10 @@ const userSchema = {
 
         return true;
       }),
+    check("role")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422)),
     (req, res, next) => {
       validateResult(req, res, next);
     },
@@ -68,7 +72,7 @@ const userSchema = {
       .withMessage(() => new ClientError("MustNotBeEmpty", 400))
       .isString()
       .withMessage(() => new ClientError("MustBeAString", 422))
-      .custom(async (value) => {
+      .custom(async (value, { req }) => {
         const existingUser = await getDocuments("users", [
           "phone",
           "==",
@@ -88,10 +92,12 @@ const userSchema = {
       .withMessage(() => new ClientError("MustNotBeEmpty", 400))
       .isEmail()
       .withMessage(() => new ClientError("MustBeAValidEmail", 422))
-      .custom(async (value) => {
-        const existingUser = await getUserByEmail(value);
-        if (existingUser) {
-          throw () => new ClientError("EmailAlreadyRegistered", 409);
+      .custom(async (value, { req }) => {
+        if (value) {
+          const existingUser = await getUserByEmail(value);
+          if (existingUser) {
+            throw () => new ClientError("EmailAlreadyRegistered", 409);
+          }
         }
       }),
     check("user.status")

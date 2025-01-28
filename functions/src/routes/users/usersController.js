@@ -119,16 +119,18 @@ const putUser = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const { id, lastDocId, itemsPerPage } = req.query;
+  const { id, lastDocId, itemsPerPage, role } = req.query;
   if (id) {
     const user = await getDocument("users", id);
     return response(res, req, 200, user);
   }
 
-  //Ejemplo de paginado
   if (itemsPerPage) {
     const itemsPerPageNumber = parseInt(itemsPerPage, 10);
-    const filters = [["status", "==", "active"]];
+    let filters = [];
+    if (role) {
+      filters.push(["role", "==", role]);
+    }
     const orderBy = ["createdAt", "asc"];
 
     const totalDocuments = await getTotalDocumentsWithFilters("users", filters);
