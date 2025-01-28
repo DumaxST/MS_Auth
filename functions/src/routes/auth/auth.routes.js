@@ -29,4 +29,10 @@ router.post("/logout", validateRefreshToken, authController.logout);
 
 router.get("/refreshToken", validateRefreshToken, authController.refreshToken);
 
+//security code
+router.post("/password/code", authSchema.passwordCode, authController.passwordCode);
+
+//reset password
+router.post("/reset/password", authSchema.validateCode, authController.validateVerificationCode); 
+
 module.exports = router;

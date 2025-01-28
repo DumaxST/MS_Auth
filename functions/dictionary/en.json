@@ -1,4 +1,8 @@
 {
+  "invalidOrExpiredCode": "Invalid or expired code",
+  "codeDoesNotExist": "Verification code doesn't exist",
+  "codeSent": "code successfully sent!",
+  "emailSent": "Email successfully sent!",
   "EmailAlreadyRegistered": "This e-mail is already in use.",
   "FileNameIsRequired": "File name is required",
   "FileNameMustBeAString": "File name must be a string",
