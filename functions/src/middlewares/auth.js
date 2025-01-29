@@ -52,19 +52,19 @@ const validateRefreshToken = (req, res, next) => {
 const validateAuthTokenFirebase = async (req, res, next) => {
   try {
     //para simular front descomentar para pruebas y comentar también schema en ruta
-    const auth = await axios.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${key}`,
-      {
-        email: "sofiadubrowsky@gmail.com",
-        password: "123456789",
-        returnSecureToken: true,
-      }
-    );
+    // const auth = await axios.post(
+    //   `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${key}`,
+    //   {
+    //     email: "sofiadubrowsky@gmail.com",
+    //     password: "123456789",
+    //     returnSecureToken: true,
+    //   }
+    // );
 
-    const tokenAuth = auth.data.idToken;
+    // const tokenAuth = auth.data.idToken;
 
     // Info del cliente
-    //const tokenAuth = req.body.tokenAuth;
+    const tokenAuth = req.body.tokenAuth;
 
     const decodedToken = await admin.auth().verifyIdToken(tokenAuth);
 
