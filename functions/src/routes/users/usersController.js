@@ -11,6 +11,7 @@ const {
 const { response, cachedAsync } = require("../../middlewares");
 const admin = require("firebase-admin");
 const CryptoJS = require("crypto-js");
+const accountCreated = require("../../../templates/accountCreated");
 
 const postUser = async (req, res) => {
   const { user, auth } = req.body;
@@ -124,6 +125,14 @@ const postPublicUser = async (req, res) => {
   });
 
   await createDocument("users", user, newUser.uid);
+
+  const passwordResetLink = await admin
+    .auth()
+    .generatePasswordResetLink(user.email);
+
+  const emailDataTemp = accountCreated(user, passwordResetLink);
+
+  await sendFirebaseEmail(emailDataTemp);
 
   return response(res, req, 201, { ...user, id: newUser.uid });
 
