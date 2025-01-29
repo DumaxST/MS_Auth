@@ -1,9 +1,52 @@
-const { check } = require("express-validator");
 const { validateResult } = require("../../middlewares/validateHelper");
-const { getDocuments, getUserByEmail } = require("../../../generalFunctions");
 const { ClientError } = require("../../middlewares/errors/index");
+const { check } = require("express-validator");
+const {
+  getDocuments,
+  getUserByEmail,
+  getDocument,
+} = require("../../../generalFunctions");
 
 const userSchema = {
+  getUser: [
+    check("id")
+      .optional()
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
+      .custom(async (value) => {
+        const existingUser = await getDocument(`/users`, value);
+
+        if (!existingUser) {
+          throw () => new ClientError("InvalidUserID", 404);
+        }
+
+        return true;
+      }),
+    check("itemsPerPage")
+      .optional()
+      .isNumeric()
+      .withMessage(() => new ClientError("MustBeNumeric", 422)),
+    check("lastDocId")
+      .optional()
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
+      .custom(async (value) => {
+        const existingUser = await getDocument(`/users`, value);
+
+        if (!existingUser) {
+          throw () => new ClientError("InvalidUserID", 404);
+        }
+
+        return true;
+      }),
+    check("role")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422)),
+    (req, res, next) => {
+      validateResult(req, res, next);
+    },
+  ],
   postUser: [
     check("auth")
       .notEmpty()
@@ -64,12 +107,118 @@ const userSchema = {
       .withMessage(() => new ClientError("MustBeAString", 422)),
     check("user.profilePicture")
       .optional()
-      .custom((value, { req }) => {
-        if (value) {
-          const language = req?.query?.lang;
-          if (typeof value !== "object") {
-            throw () => new ClientError("MustBeAnObject", 422);
+      .custom((value) => {
+        if (typeof value !== "object") {
+          throw () => new ClientError("MustBeAnObject", 422);
+        }
+
+        const { url, fileName, ...rest } = value;
+
+        if (Object.keys(rest).length > 0) {
+          throw () => new ClientError("InvalidProfilePictureKey", 400);
+        }
+
+        if (url === "" && fileName === "") {
+          return true;
+        }
+
+        if (url && url !== "" && fileName && fileName !== "") {
+          if (typeof url !== "string") {
+            throw () => new ClientError("UrlMustBeAString", 422);
           }
+
+          if (!url.startsWith("https://firebasestorage.googleapis.com")) {
+            throw () => new ClientError("InvalidUrl", 400);
+          }
+
+          if (typeof fileName !== "string") {
+            throw () => new ClientError("FileNameMustBeAString", 422);
+          }
+        } else if (url || fileName) {
+          if (!url) {
+            throw () => new ClientError("UrlIsRequired", 400);
+          }
+          if (!fileName) {
+            throw () => new ClientError("FileNameIsRequired", 400);
+          }
+        }
+
+        return true;
+      }),
+    (req, res, next) => {
+      validateResult(req, res, next);
+    },
+  ],
+  putUser: [
+    check("id")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .custom(async (value) => {
+        if (value) {
+          const existingUser = await getDocument(`/users`, value);
+
+          if (!existingUser) {
+            throw () => new ClientError("InvalidUserID", 404);
+          }
+        }
+        return true;
+      }),
+    check("firstName")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isLength({ max: 20 })
+      .withMessage(() => new ClientError("MustBe20CharactersMax", 422)),
+    check("lastName")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isLength({ max: 20 })
+      .withMessage(() => new ClientError("MustBe20CharactersMax", 422)),
+    check("phone")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .custom(async (value) => {
+        if (value) {
+          const existingUser = await getDocuments("users", [
+            "phone",
+            "==",
+            value,
+          ]);
+          if (existingUser.length > 0) {
+            throw () => new ClientError("PhoneAlreadyRegistered", 409);
+          }
+        }
+      }),
+    check("role")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422)),
+    check("email")
+      .optional()
+      .isEmail()
+      .withMessage(() => new ClientError("MustBeAValidEmail", 422))
+      .custom(async (value) => {
+        if (value) {
+          const existingUser = await getUserByEmail(value);
+          if (existingUser) {
+            throw () => new ClientError("EmailAlreadyRegistered", 409);
+          }
+        }
+      }),
+    check("status")
+      .optional()
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422)),
+    check("profilePicture")
+      .optional()
+      .custom((value) => {
+        if (typeof value !== "object") {
+          throw () => new ClientError("MustBeAnObject", 422);
+        }
 
           const { url, fileName, ...rest } = value;
 
@@ -90,22 +239,40 @@ const userSchema = {
               throw () => new ClientError("InvalidUrl", 400);
             }
 
-            if (typeof fileName !== "string") {
-              throw () => new ClientError("FileNameMustBeAString", 422);
-            }
-          } else if (url || fileName) {
-            if (!url) {
-              throw () => new ClientError("UrlIsRequired", 400);
-            }
-            if (!fileName) {
-              throw () => new ClientError("FileNameIsRequired", 400);
-            }
+          if (typeof fileName !== "string") {
+            throw () => new ClientError("FileNameMustBeAString", 422);
           }
-
-          return true;
-        } else {
-          return true;
+        } else if (url || fileName) {
+          if (!url) {
+            throw () => new ClientError("UrlIsRequired", 400);
+          }
+          if (!fileName) {
+            throw () => new ClientError("FileNameIsRequired", 400);
+          }
         }
+
+        return true;
+      }),
+    (req, res, next) => {
+      validateResult(req, res, next);
+    },
+  ],
+  deleteUser: [
+    check("id")
+      .notEmpty()
+      .withMessage(() => new ClientError("MustNotBeEmpty", 400))
+      .isString()
+      .withMessage(() => new ClientError("MustBeAString", 422))
+      .custom(async (value) => {
+        console.log("value", value);
+
+        const existingUser = await getDocument(`/users`, value);
+
+        if (!existingUser) {
+          throw () => new ClientError("InvalidUserID", 404);
+        }
+
+        return true;
       }),
     (req, res, next) => {
       validateResult(req, res, next);
