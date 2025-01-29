@@ -12,9 +12,6 @@ const {
   getPaginatedFilteredDocuments,
   sendFirebaseEmail,
 } = require("../../../generalFunctions");
-const { response, cachedAsync } = require("../../middlewares");
-const admin = require("firebase-admin");
-const CryptoJS = require("crypto-js");
 const accountCreated = require("../../../templates/accountCreated");
 
 const postUser = async (req, res) => {
