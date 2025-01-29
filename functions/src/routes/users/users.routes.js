@@ -13,9 +13,9 @@ router.post("/create/user", validateToken, userSchema.postUser, usersController.
 
 router.put("/update/user", validateToken, userSchema.putUser, usersController.putUser);
 
-router.get("/get/user", validateToken,  userSchema.getUser, usersController.getUser);
+router.get("/get/user", validateToken, userSchema.getUser, usersController.getUser);
 
-router.delete("/delete/user", userSchema.deleteUser, usersController.deleteUser);
+router.delete("/delete/user", validateToken, userSchema.deleteUser, usersController.deleteUser);
 
 
 //public user

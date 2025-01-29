@@ -11,6 +11,7 @@ const {
   getTotalDocumentsWithFilters,
   getPaginatedFilteredDocuments,
 } = require("../../../generalFunctions");
+const { get } = require("./users.routes");
 
 jest.mock("firebase-admin", () => {
   const actualAdmin = jest.requireActual("firebase-admin");
@@ -24,6 +25,7 @@ jest.mock("firebase-admin", () => {
         .fn()
         .mockResolvedValue("http://reset-link"),
       deleteUser: jest.fn().mockResolvedValue(true),
+      updateUser: jest.fn().mockResolvedValue(true),
     }),
     credential: {
       cert: jest.fn(),
@@ -48,6 +50,10 @@ jest.mock("firebase-admin", () => {
           save: jest.fn().mockResolvedValue(true),
           delete: jest.fn().mockResolvedValue(true),
         }),
+        getFiles: jest.fn().mockResolvedValue([
+          // Mock de getFiles
+          [{ delete: jest.fn().mockResolvedValue(true) }],
+        ]),
       }),
     }),
   };
@@ -62,7 +68,20 @@ jest.mock("../../../generalFunctions", () => ({
   getDocuments: jest.fn(),
   updateDocument: jest.fn(),
   deleteDocument: jest.fn(),
-  getDocument: jest.fn(),
+  getDocument: jest.fn().mockImplementation((collection, id) => {
+    if (id === "testUserId") {
+      return {
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      };
+    }
+    return null;
+  }),
   getTotalDocumentsWithFilters: jest.fn(),
   getPaginatedFilteredDocuments: jest.fn(),
 }));
@@ -780,7 +799,7 @@ describe("POST /create/user", () => {
   });
 });
 
-xdescribe("PUT /update/user", () => {
+describe("PUT /update/user", () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -809,6 +828,308 @@ xdescribe("PUT /update/user", () => {
     );
   });
 
+  it("Should respond with a 400 error if a required id is missing", async () => {
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        user: {
+          firstName: "John",
+          lastName: "Doe",
+          phone: "1234567890",
+          role: "user",
+          email: "john.doe@example.com",
+          status: "active",
+        },
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 404 error if an invalid user ID is provided", async () => {
+    getDocument.mockResolvedValue(null);
+
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "invalidUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body.meta.message["404"][0].msg).toBe(
+      lang === "en" ? "UserID invalid" : "ID de usuario inválido"
+    );
+  });
+
+  it("Should respond with a 422 error if id has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: null,
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be alphanumeric" : "Debe ser alfanumérico"
+    );
+  });
+
+  it("Should respond with a 422 error if firstName has an invalid format", async () => {
+    getDocuments.mockResolvedValue([{ id: "testUserId" }]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: 1234567890,
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if lastName has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: 1234567890,
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if phone has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: 1234567890,
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if role has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: 1234567890,
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if email has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "invalid_email_format",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en"
+        ? "Must be a valid email"
+        : "Debe ser un correo electrónico válido"
+    );
+  });
+
+  it("Should respond with a 422 error if status has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: 1234567890,
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be a string" : "Debe ser una cadena de caracteres"
+    );
+  });
+
+  it("Should respond with a 422 error if profilePicture has an invalid format", async () => {
+    getDocuments.mockResolvedValue([]);
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+        profilePicture: "invalid_format",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be an object" : "Debe ser un objeto"
+    );
+  });
+
+  it("Should respond with a 409 error if the phone is already registered", async () => {
+    getDocuments.mockResolvedValue([{ phone: "1234567890" }]);
+
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["409"][0].status).toBe(409);
+    expect(res.body.meta.message["409"][0].msg).toBe(
+      lang === "en"
+        ? "This phone number is already associated with an existing account."
+        : "Este número de teléfono ya está asociado con una cuenta existente"
+    );
+  });
+
+  it("Should respond with a 409 error if the email is already registered", async () => {
+    getDocuments.mockResolvedValue([]);
+    getUserByEmail.mockResolvedValue({
+      email: "john.doe@example.com",
+      id: "testUserId",
+    });
+
+    const res = await request(usersApp)
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        id: "testUserId",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "1234567890",
+        role: "user",
+        email: "john.doe@example.com",
+        status: "active",
+      })
+      .query({
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["409"][0].status).toBe(409);
+    expect(res.body.meta.message["409"][0].msg).toBe(
+      lang === "en"
+        ? "This email is already associated with an existing account"
+        : "Este correo electrónico ya está asociado con una cuenta existente"
+    );
+  });
+
   it("Should respond with 200 and an object with the updated user if all data is valid", async () => {
     updateDocument.mockResolvedValue({
       id: "testUserId",
@@ -819,13 +1140,22 @@ xdescribe("PUT /update/user", () => {
       email: "john.doe@example.com",
       status: "active",
     });
+    getUserByEmail.mockResolvedValue(null);
+    getDocuments.mockResolvedValue([]);
+    getDocument.mockResolvedValue({
+      id: "testUserId",
+      firstName: "John",
+      lastName: "Doe",
+      phone: "1234567890",
+      role: "user",
+      email: "john.doe@example.com",
+      status: "active",
+    });
 
-    
     const res = await request(usersApp)
-    .put("/update/user")
-    .set("Authorization", `Bearer ${token}`)
-    .send({
-      user: {
+      .put("/update/user")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
         id: "testUserId",
         firstName: "John",
         lastName: "Doe",
@@ -833,13 +1163,11 @@ xdescribe("PUT /update/user", () => {
         role: "user",
         email: "john.doe@example.com",
         status: "active",
-      },
-    })
-    .query({
-      lang: lang,
-    });
-    
-    console.log(res.body.meta.message);
+      })
+      .query({
+        lang: lang,
+      });
+
     expect(res.status).toBe(200);
     expect(res.body.data).toBeInstanceOf(Object);
     expect(res.body.data).toHaveProperty("id");
@@ -852,7 +1180,7 @@ xdescribe("PUT /update/user", () => {
   });
 });
 
-xdescribe("DELETE /delete/user", () => {
+describe("DELETE /delete/user", () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -869,8 +1197,63 @@ xdescribe("DELETE /delete/user", () => {
     );
   });
 
+  it("Should respond with a 400 error if a required id is missing", async () => {
+    const res = await request(usersApp)
+      .delete("/delete/user")
+      .set("Authorization", `Bearer ${token}`)
+      .query({
+        lang: lang,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.meta.message["400"][0].msg).toBe(
+      lang === "en" ? "Must not be empty" : "No debe estar vacío"
+    );
+  });
+
+  it("Should respond with a 404 error if an invalid user ID is provided", async () => {
+    getDocument.mockResolvedValue(null);
+
+    const res = await request(usersApp)
+      .delete("/delete/user")
+      .set("Authorization", `Bearer ${token}`)
+      .query({
+        id: "invalidUserId",
+        lang: lang,
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body.meta.message["404"][0].msg).toBe(
+      lang === "en" ? "UserID invalid" : "ID de usuario inválido"
+    );
+  });
+
+  it("Should respond with a 422 error if id has an invalid format", async () => {
+    const res = await request(usersApp)
+      .delete("/delete/user")
+      .set("Authorization", `Bearer ${token}`)
+      .query({
+        id: null,
+        lang: lang,
+      });
+
+    expect(res.body.meta.message["422"][0].status).toBe(422);
+    expect(res.body.meta.message["422"][0].msg).toBe(
+      lang === "en" ? "Must be alphanumeric" : "Debe ser alfanumérico"
+    );
+  });
+
   it("Should respond with a 200 status if the user was successfully deleted", async () => {
     deleteDocument.mockResolvedValue(true);
+    getDocument.mockResolvedValue({
+      id: "testUserId",
+      firstName: "John",
+      lastName: "Doe",
+      phone: "1234567890",
+      role: "user",
+      email: "john.doe@example.com",
+      status: "active",
+    });
 
     const res = await request(usersApp)
       .delete("/delete/user")
@@ -881,7 +1264,9 @@ xdescribe("DELETE /delete/user", () => {
       });
 
     expect(res.status).toBe(200);
-    expect(res.body.data.message).toBe("User deleted");
+    expect(res.body.data.message).toBe(
+      lang === "en" ? "User deleted" : "Usuario eliminado"
+    );
   });
 });
 
