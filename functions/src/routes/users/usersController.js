@@ -12,6 +12,7 @@ const {
   getPaginatedFilteredDocuments,
   sendFirebaseEmail,
 } = require("../../../generalFunctions");
+const accountCreated = require("../../../templates/accountCreated");
 
 const postUser = async (req, res) => {
   const { user, auth } = req.body;
@@ -191,9 +192,38 @@ const deleteUser = async (req, res) => {
   return response(res, req, 200, { message: req.t("UserDeleted") });
 };
 
+//Public user
+const postPublicUser = async (req, res) => {
+  const {user, auth} = req.body;
+
+  const decryptedAuth = CryptoJS.AES.decrypt(auth, "your-secret-key").toString(
+    CryptoJS.enc.Utf8
+  );
+
+  const newUser = await admin.auth().createUser({
+    email: user.email,
+    password: decryptedAuth,
+    displayName: `${user.firstName} ${user.lastName}`,
+  });
+
+  await createDocument("users", user, newUser.uid);
+
+  const passwordResetLink = await admin
+    .auth()
+    .generatePasswordResetLink(user.email);
+
+  const emailDataTemp = accountCreated(user, passwordResetLink);
+
+  await sendFirebaseEmail(emailDataTemp);
+
+  return response(res, req, 201, { ...user, id: newUser.uid });
+
+}
+
 module.exports = {
   postUser: cachedAsync(postUser),
   putUser: cachedAsync(putUser),
   getUser: cachedAsync(getUser),
   deleteUser: cachedAsync(deleteUser),
+  postPublicUser: cachedAsync(postPublicUser),
 };

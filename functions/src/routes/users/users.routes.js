@@ -17,4 +17,8 @@ router.get("/get/user", validateToken,  userSchema.getUser, usersController.getU
 
 router.delete("/delete/user", userSchema.deleteUser, usersController.deleteUser);
 
+
+//public user
+router.post("/create/public/user", userSchema.postPublicUser, usersController.postPublicUser );
+
 module.exports = router;
