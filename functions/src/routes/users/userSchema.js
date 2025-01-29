@@ -153,8 +153,8 @@ const userSchema = {
     check("id")
       .notEmpty()
       .withMessage(() => new ClientError("MustNotBeEmpty", 400))
-      .isString()
-      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
       .custom(async (value) => {
         if (value) {
           const existingUser = await getDocument(`/users`, value);
@@ -261,10 +261,9 @@ const userSchema = {
     check("id")
       .notEmpty()
       .withMessage(() => new ClientError("MustNotBeEmpty", 400))
-      .isString()
-      .withMessage(() => new ClientError("MustBeAString", 422))
+      .isAlphanumeric()
+      .withMessage(() => new ClientError("MustBeAlphanumeric", 422))
       .custom(async (value) => {
-        console.log("value", value);
 
         const existingUser = await getDocument(`/users`, value);
 
