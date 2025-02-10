@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
 const { validateResult } = require("../../middlewares/validateHelper");
 const { getUserByEmail } = require("../../../generalFunctions");
+const { ClientError } = require("../../middlewares/errors");
 
 const authSchema = {
     //schema inicial, se irán agregando datos y validaciones en cuanto se vayan necesitando
