@@ -1,7 +1,7 @@
 {
   "projects": {
     "default": "service-delivery-development",
-    "development": "service-delivery-development"
+    "development": "microservices-developmen-7ad5d"
   },
   "targets": {},
   "etags": {}
