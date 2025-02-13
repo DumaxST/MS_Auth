@@ -14,22 +14,36 @@ const cors = require("cors");
 
 // Middlewares
 const ErrorHandler = require("./src/middlewares/errorHandler");
+const ClientError = require("./src/middlewares/errors/index");  
 const { languageTranslation } = require("./src/middlewares");
 
 // Configuración de serviceAccount
 const serviceAccount = require("./serviceAccount.json");
 const cookieParser = require("cookie-parser");
 
+// Inicializar Express
+const app = express();
+
 // Inicializar Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "gs://service-delivery-development.firebasestorage.app",
+  storageBucket: "gs://microservices-auth-development",
+  databaseURL: "https://microservices-auth-development.firebaseio.com",
 });
+
+const authApp = admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  projectId: "microservices-developmen-7ad5d",  
+}, "authApp");
+
+const authDb = admin.firestore(authApp);
+
 
 //Bucket de almacenemaiento
 const bucket = admin
   .storage()
-  .bucket("gs://service-delivery-development.firebasestorage.app");
+  .bucket("gs://microservices-auth-development");
+
 exports.bucket = bucket;
 
 // Inicializar i18next
@@ -44,63 +58,58 @@ i18next
 // Orígenes permitidos
 const origins = [process.env.ORIGIN1, process.env.ORIGIN2];
 
-// Crear aplicación Express configurada
-const createApp = (routes) => {
-  const app = express();
+// Middleware de CORS
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || origins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-  // Middleware de CORS
-  app.use(
-    cors({
-      origin: function (origin, callback) {
-        if (!origin || origins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
-      credentials: true,
-    })
-  );
+app.use(express.json());
+app.use(cookieParser());
 
-  app.use(express.json());
-  app.use(cookieParser());
+// Obtener IP del request
+app.use((req, res, next) => {
+  const ip =
+    req.headers["x-forwarded-for"]?.split(",")[0] ??
+    req.connection.remoteAddress?.split(":").pop() ??
+    req.connection.remoteAddress ??
+    req.socket.remoteAddress ??
+    req.connection.socket?.remoteAddress ??
+    "0.0.0.0";
 
-  // Obtener IP del request
-  app.use((req, res, next) => {
-    const ip =
-      req.headers["x-forwarded-for"]?.split(",")[0] ??
-      req.connection.remoteAddress?.split(":").pop() ??
-      req.connection.remoteAddress ??
-      req.socket.remoteAddress ??
-      req.connection.socket?.remoteAddress ??
-      "0.0.0.0";
+  req.clientIp = ip;
+  next();
+});
 
-    req.clientIp = ip;
-    next();
-  });
+// Middleware de i18next
+app.use(middleware.handle(i18next));
+app.use(languageTranslation);
 
-  // Middleware de i18next
-  app.use(middleware.handle(i18next));
-  app.use(languageTranslation);
+// Rutas específicas
+app.use(require("./src/routes/users/users.routes"));
+app.use(require("./src/routes/auth/auth.routes"));
+app.use(require("./src/routes/projects/projects.routes"));
 
-  // Rutas específicas
-  app.use(routes);
+// Middleware de rutas no encontradas
+app.use('*', (req, res) => {
+  throw new ClientError('404 Not Found', 404);
+})
 
-  // Middleware de errores
-  app.use(ErrorHandler);
-
-  return app;
-};
-
-// Crear instancias para users y auth
-const usersApp = createApp(require("./src/routes/users/users.routes"));
-const authApp = createApp(require("./src/routes/auth/auth.routes"));
-
-// Exportar para Firebase Functions
-exports.users = functions.https.onRequest(usersApp);
-exports.auth = functions.https.onRequest(authApp);
+// Middleware de errores
+app.use(ErrorHandler);
 
 // Exportar para Supertest
 if (process.env.NODE_ENV === "test") {
-  module.exports = { usersApp, authApp };
+  module.exports = { app };
 }
+
+// Exportar para Firebase Functions
+exports.app = functions.https.onRequest(app);
