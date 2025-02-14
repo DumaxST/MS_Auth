@@ -1,6 +1,6 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
-const { usersApp } = require("../../../index");
+const { App } = require("../../../index");
 const secretKeyJWT = process.env.JWT_SECRET;
 const {
   getDocuments,
@@ -110,7 +110,7 @@ beforeEach(() => {
 
 describe("GET /get/user", () => {
   it("Should respond with a 401 error if no token is sent", async () => {
-    const res = await request(usersApp).get("/get/user").query({
+    const res = await request(App).get("/get/user").query({
       lang: lang,
     });
     expect(res.status).toBe(401);
@@ -122,7 +122,7 @@ describe("GET /get/user", () => {
   it("Should respond with a 404 error if an invalid user ID is provided", async () => {
     getDocument.mockResolvedValue(null);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -139,7 +139,7 @@ describe("GET /get/user", () => {
   it("Should respond with a 404 error if an invalid lastDocId is provided", async () => {
     getDocument.mockResolvedValue(null);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -154,7 +154,7 @@ describe("GET /get/user", () => {
   });
 
   it("Should respond with a 422 error if id has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -169,7 +169,7 @@ describe("GET /get/user", () => {
   });
 
   it("Should respond with a 422 error if itemsPerPage has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -184,7 +184,7 @@ describe("GET /get/user", () => {
   });
 
   it("Should respond with a 422 error if lastDocId has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -201,7 +201,7 @@ describe("GET /get/user", () => {
   it("Should respond with a valid array of users if a correct token is sent", async () => {
     getDocuments.mockResolvedValue([{ id: "user1" }, { id: "user2" }]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -217,7 +217,7 @@ describe("GET /get/user", () => {
   it("Should respond with a specific user if an ID is provided", async () => {
     getDocument.mockResolvedValue({ id: "user1", firstName: "John" });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -238,7 +238,7 @@ describe("GET /get/user", () => {
       newLastDocId: "user2",
     });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -265,7 +265,7 @@ describe("GET /get/user", () => {
       newLastDocId: "user2",
     });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .get("/get/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -292,7 +292,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 401 error if no token is sent", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -316,7 +316,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required firstName is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -340,7 +340,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required lastName is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -364,7 +364,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required phone is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -388,7 +388,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required role is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -412,7 +412,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required email is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -436,7 +436,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if a required status is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -460,7 +460,7 @@ describe("POST /create/user", () => {
   });
 
   it("Should respond with a 400 error if auth is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -486,7 +486,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if email has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -515,7 +515,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if auth has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -542,7 +542,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if firstName has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -569,7 +569,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if lastName has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -596,7 +596,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if phone has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -623,7 +623,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if role has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -650,7 +650,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if status has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -677,7 +677,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 422 error if profilePicture has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -705,7 +705,7 @@ describe("POST /create/user", () => {
   it("Should respond with a 409 error if the phone is already registered", async () => {
     getDocuments.mockResolvedValue([{ phone: "1234567890" }]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -735,7 +735,7 @@ describe("POST /create/user", () => {
     getDocuments.mockResolvedValue([]);
     getUserByEmail.mockResolvedValue({ email: "existing.email@example.com" });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -768,7 +768,7 @@ describe("POST /create/user", () => {
     getUserByEmail.mockResolvedValue(null);
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -805,7 +805,7 @@ describe("PUT /update/user", () => {
   });
 
   it("Should respond with a 401 error if no token is sent", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .send({
         user: {
@@ -829,7 +829,7 @@ describe("PUT /update/user", () => {
   });
 
   it("Should respond with a 400 error if a required id is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -855,7 +855,7 @@ describe("PUT /update/user", () => {
   it("Should respond with a 404 error if an invalid user ID is provided", async () => {
     getDocument.mockResolvedValue(null);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -879,7 +879,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if id has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -903,7 +903,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if firstName has an invalid format", async () => {
     getDocuments.mockResolvedValue([{ id: "testUserId" }]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -927,7 +927,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if lastName has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -951,7 +951,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if phone has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -975,7 +975,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if role has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -999,7 +999,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if email has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1025,7 +1025,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if status has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1049,7 +1049,7 @@ describe("PUT /update/user", () => {
 
   it("Should respond with a 422 error if profilePicture has an invalid format", async () => {
     getDocuments.mockResolvedValue([]);
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1075,7 +1075,7 @@ describe("PUT /update/user", () => {
   it("Should respond with a 409 error if the phone is already registered", async () => {
     getDocuments.mockResolvedValue([{ phone: "1234567890" }]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1106,7 +1106,7 @@ describe("PUT /update/user", () => {
       id: "testUserId",
     });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1152,7 +1152,7 @@ describe("PUT /update/user", () => {
       status: "active",
     });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .put("/update/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1186,7 +1186,7 @@ describe("DELETE /delete/user", () => {
   });
 
   it("Should respond with a 401 error if no token is sent", async () => {
-    const res = await request(usersApp).delete("/delete/user").query({
+    const res = await request(App).delete("/delete/user").query({
       id: "testUserId",
       lang: lang,
     });
@@ -1198,7 +1198,7 @@ describe("DELETE /delete/user", () => {
   });
 
   it("Should respond with a 400 error if a required id is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .delete("/delete/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -1214,7 +1214,7 @@ describe("DELETE /delete/user", () => {
   it("Should respond with a 404 error if an invalid user ID is provided", async () => {
     getDocument.mockResolvedValue(null);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .delete("/delete/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -1229,7 +1229,7 @@ describe("DELETE /delete/user", () => {
   });
 
   it("Should respond with a 422 error if id has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .delete("/delete/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -1255,7 +1255,7 @@ describe("DELETE /delete/user", () => {
       status: "active",
     });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .delete("/delete/user")
       .set("Authorization", `Bearer ${token}`)
       .query({
@@ -1276,7 +1276,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 400 error if a required firstName is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1296,7 +1296,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 400 error if a required lastName is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -1317,7 +1317,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 400 error if a required email is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1337,7 +1337,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 400 error if auth is missing", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         user: {
@@ -1357,7 +1357,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 422 error if email has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1380,7 +1380,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 422 error if auth has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: 1234567890,
@@ -1401,7 +1401,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 422 error if firstName has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1422,7 +1422,7 @@ describe("POST /create/public/user", () => {
   });
 
   it("Should respond with a 422 error if lastName has an invalid format", async () => {
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1446,7 +1446,7 @@ describe("POST /create/public/user", () => {
     getDocuments.mockResolvedValue([]);
     getUserByEmail.mockResolvedValue({ email: "existing.email@example.com" });
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
@@ -1475,7 +1475,7 @@ describe("POST /create/public/user", () => {
     getUserByEmail.mockResolvedValue(null);
     getDocuments.mockResolvedValue([]);
 
-    const res = await request(usersApp)
+    const res = await request(App)
       .post("/create/public/user")
       .send({
         auth: "U2FsdGVkX18pdoGSdzYjxnpugfJg+xEq+NzL87KOB1c=",
