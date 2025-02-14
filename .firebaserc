@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "service-delivery-development",
+    "default": "microservices-developmen-7ad5d",
     "development": "microservices-developmen-7ad5d"
   },
   "targets": {},

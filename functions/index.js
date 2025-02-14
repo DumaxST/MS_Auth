@@ -31,13 +31,6 @@ admin.initializeApp({
   databaseURL: "https://microservices-auth-development.firebaseio.com",
 });
 
-const authApp = admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  projectId: "microservices-developmen-7ad5d",  
-}, "authApp");
-
-const authDb = admin.firestore(authApp);
-
 
 //Bucket de almacenemaiento
 const bucket = admin
@@ -96,7 +89,7 @@ app.use(languageTranslation);
 // Rutas específicas
 app.use(require("./src/routes/users/users.routes"));
 app.use(require("./src/routes/auth/auth.routes"));
-app.use(require("./src/routes/projects/projects.routes"));
+// app.use(require("./src/routes/projects/projects.routes"));
 
 // Middleware de rutas no encontradas
 app.use('*', (req, res) => {

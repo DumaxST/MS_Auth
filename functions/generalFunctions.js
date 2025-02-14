@@ -1,5 +1,7 @@
 const admin = require("firebase-admin");
-const db = admin.firestore();
+// const db = admin.firestore();
+const { getFirestore } = require('firebase-admin/firestore');
+const db = getFirestore('auth');
 const { FieldValue } = require("firebase-admin/firestore");
 require('dotenv').config();
 const secretKeyJWT = process.env.JWT_SECRET 
