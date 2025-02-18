@@ -1,7 +1,0 @@
-node_modules/
-
-.env
-/functions/.env
-
-serviceAccount.json
-env.json

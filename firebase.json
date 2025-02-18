@@ -1,4 +1,12 @@
 {
+  "hosting": {
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "function": "apiGateway"
+      }
+    ]
+  },
   "functions": [
     {
       "source": "functions",
@@ -10,6 +18,25 @@
         "firebase-debug.*.log",
         "*.local"
       ]
+    },
+    {
+      "source": "api-gateway",
+      "codebase": "api-gateway",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
     }
-  ]
+  ],
+  "emulators": {
+    "authentication": {
+      "port": 4646
+    },
+    "api-gateway": {
+      "port": 4000
+    }
+  }
 }
