@@ -14,8 +14,8 @@ const cors = require("cors");
 
 // Middlewares
 const ErrorHandler = require("./src/middlewares/errorHandler");
-const { ClientError } = require("./src/middlewares/errors/index");  
-const { languageTranslation } = require("./src/middlewares");
+const languageTranslation  = require("./src/middlewares/languageTranslation");
+const { ClientError } = require("./src/utils/errors");  
 
 // Configuración de serviceAccount
 const serviceAccount = require("./serviceAccount.json");
@@ -100,10 +100,12 @@ const createApp = (routes) => {
 
 // Rutas específicas
 const appRouters = [
-  require("./src/routes/users/users.routes"),
-  require("./src/routes/auth/auth.routes"),
+  require("./src/modules/users/users.routes"),
+  require("./src/modules/auth/auth.routes"),
+  require("./src/modules/projects/projects.routes"),
 ]
 
+// Crear aplicación
 const App = createApp(appRouters);
 
 // Exportar para Firebase Functions
