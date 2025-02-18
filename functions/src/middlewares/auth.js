@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const { getDocument } = require("../../generalFunctions");
-const { ClientError } = require("./errors/index");
+const { ClientError } = require("../utils/errors");
 require("dotenv").config();
 const secretKeyJWT = process.env.JWT_SECRET;
 const secretKeyRefresh = process.env.JWT_REFRESH_SECRET;
