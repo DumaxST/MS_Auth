@@ -1,5 +1,5 @@
 const { validateResult } = require("../../middlewares/validateHelper");
-const { ClientError } = require("../../middlewares/errors/index");
+const { ClientError } = require("../../utils/errors");
 const { check } = require("express-validator");
 const {
   getDocuments,

@@ -1,4 +1,4 @@
-const { response, cachedAsync } = require("../../middlewares");
+const { response, cachedAsync } = require("../../utils");
 const bucket = require("../../../index").bucket;
 const admin = require("firebase-admin");
 const CryptoJS = require("crypto-js");
