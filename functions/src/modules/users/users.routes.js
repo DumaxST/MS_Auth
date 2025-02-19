@@ -9,13 +9,13 @@ const userSchema = require("./userSchema");
 
 // ---------------------------------------- RUTAS ---------------------------------------- 
 
-router.post("/user", userSchema.postUser, usersController.postUser);
+router.post("/user", validateToken, userSchema.postUser, usersController.postUser);
 
 router.put("/user", validateToken, userSchema.putUser, usersController.putUser);
 
 router.get("/user", validateToken, userSchema.getUser, usersController.getUser);
 
-router.delete("/user", userSchema.deleteUser, usersController.deleteUser);
+router.delete("/user", validateToken, userSchema.deleteUser, usersController.deleteUser);
 
 
 //public user
